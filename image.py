@@ -264,8 +264,6 @@ def processImage(sourcepoints, imgpoints, orgimg):
     # use solvePnp to calculate the rotation and translation vectors
     rotation_vector, translation_vector, inliers = cv2.solvePnPRansac(sourcepoints, imgpoints, camera_matrix, dist_coeffs)
     np_rodrigues = np.asarray(rotation_vector[:, :], np.float64)
-    # rotM and cameraPosition are the values for world coordinates, was not clear
-    # if this was required so leaving it in
     rotM = cv2.Rodrigues(np_rodrigues)[0]
     cameraPosition = -np.matrix(rotM).T * np.matrix(translation_vector)
 
@@ -294,8 +292,6 @@ def draw(dummmy,qrimg,translationvector,filename):
     x = translationvector[0:1]
     y = translationvector[1:2]
     z = translationvector[2:3]
-
-    print x,y,z
 
     ax.scatter(x, y, z, color='green')
     fig.savefig(filename + '_output.png', bbox_inches='tight')
@@ -362,7 +358,8 @@ if __name__ == "__main__":
         imagepoints = np.array(np.float32([toparg,rightarg,bottomarg,fourtharg]))
         # process the image and obtain rotation and translation vectors
         rotationvector, translationvector = processImage(sourcepoints,imagepoints,image)
-        # print qrimg using draw function
-        outputimg = draw(image,img,translationvector,filename)
+        # draw the image in the same folder as the images
+        draw(image,img,translationvector,filename)
         rotationvectorarray.append(rotationvector)
         translationvectorarray.append(translationvector)
+        print 'filename is', filename, '\ntranslationvector is\n', translationvector, '\nrotationvector is\n', rotationvector
